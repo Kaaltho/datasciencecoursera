@@ -20,16 +20,20 @@ dirfiles <- "F:/R codes/Projects/datasciencecoursera/Getting and Cleaning Data/W
 files <- file.path(dirfiles, "UCI HAR Dataset")
 usefiles <- list.files(files, recursive=TRUE)
 
-datatest  <- read.table(file.path(files, "test" , "Y_test.txt" ),header = FALSE)
-datatrain <- read.table(file.path(files, "train", "Y_train.txt"),header = FALSE)
 
-# Reading data
-dataSubjectTrain <- read.table(file.path(files, "train", "subject_train.txt"),header = FALSE)
-dataSubjectTest  <- read.table(file.path(files, "test" , "subject_test.txt"),header = FALSE)
+dataActtrain <- read.table(file.path(files, "train", "Y_train.txt"),header = FALSE)
+dataActtest  <- read.table(file.path(files, "test" , "Y_test.txt" ),header = FALSE)
 
-dataFeaturesTrain <- read.table(file.path(files, "train", "X_train.txt"),header = FALSE)
-dataFeaturesTest  <- read.table(file.path(files, "test" , "X_test.txt" ),header = FALSE)
+dataSubjtrain <- read.table(file.path(files, "train", "subject_train.txt"),header = FALSE)
+dataSubjtest  <- read.table(file.path(files, "test" , "subject_test.txt"),header = FALSE)
+
+dataFeattrain <- read.table(file.path(files, "train", "X_train.txt"),header = FALSE)
+dataFeattest  <- read.table(file.path(files, "test" , "X_test.txt" ),header = FALSE)
 
 #Merging training and test
+dataActivity <- rbind(dataActtrain, dataActtest)
+dataSubject <- rbind(dataSubjtrain, dataSubjtest)
+dataFeatures <- rbind(dataFeattrain, dataFeattest)
+
 
 
