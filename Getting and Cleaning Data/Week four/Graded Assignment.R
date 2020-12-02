@@ -14,7 +14,22 @@ download.file(ulrfile, destfile =dirfile, method = "curl")
 
 unzip(dirfile,exdir="F:/R codes/Projects/datasciencecoursera/Getting and Cleaning Data/Week four/Dataset")
 
+# Variables asignation
 dirfiles <- "F:/R codes/Projects/datasciencecoursera/Getting and Cleaning Data/Week four/Dataset"
 
 files <- file.path(dirfiles, "UCI HAR Dataset")
 usefiles <- list.files(files, recursive=TRUE)
+
+datatest  <- read.table(file.path(files, "test" , "Y_test.txt" ),header = FALSE)
+datatrain <- read.table(file.path(files, "train", "Y_train.txt"),header = FALSE)
+
+# Reading data
+dataSubjectTrain <- read.table(file.path(files, "train", "subject_train.txt"),header = FALSE)
+dataSubjectTest  <- read.table(file.path(files, "test" , "subject_test.txt"),header = FALSE)
+
+dataFeaturesTrain <- read.table(file.path(files, "train", "X_train.txt"),header = FALSE)
+dataFeaturesTest  <- read.table(file.path(files, "test" , "X_test.txt" ),header = FALSE)
+
+#Merging training and test
+
+
