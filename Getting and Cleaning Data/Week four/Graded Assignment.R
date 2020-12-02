@@ -12,5 +12,9 @@ dirfile <- "F:/R codes/Projects/datasciencecoursera/Getting and Cleaning Data/We
   
 download.file(ulrfile, destfile =dirfile, method = "curl")
 
+unzip(dirfile,exdir="F:/R codes/Projects/datasciencecoursera/Getting and Cleaning Data/Week four/Dataset")
 
+dirfiles <- "F:/R codes/Projects/datasciencecoursera/Getting and Cleaning Data/Week four/Dataset"
 
+files <- file.path(dirfiles, "UCI HAR Dataset")
+usefiles <- list.files(files, recursive=TRUE)
