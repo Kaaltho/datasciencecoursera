@@ -44,3 +44,4 @@ with(powerconsumption, plot(DataTime, Global_reactive_power, type="l", xlab="dat
 dev.off()
 
 
+
