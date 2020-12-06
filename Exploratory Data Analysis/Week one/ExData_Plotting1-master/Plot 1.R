@@ -31,7 +31,3 @@ powerconsumption$Sub_metering_3 <- as.numeric(powerconsumption$Sub_metering_3)
 with(powerconsumption, hist(Global_active_power, main="Global Active Power", xlab="Global Active Power (Kilowatts)", col="red"))
 dev.copy(png,"Plot 1.png", width = 480, height = 480)
 dev.off()
-
-
-
-
