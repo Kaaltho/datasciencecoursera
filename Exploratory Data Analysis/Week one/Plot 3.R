@@ -14,7 +14,6 @@ unzip(dirfile,exdir="./data")
 powerconsumption <- read.table("household_power_consumption.txt", sep=";", header=TRUE)
 powerconsumption <- subset(powerconsumption, powerconsumption$Date=="1/2/2007" | powerconsumption$Date=="2/2/2007")
 
-
 # Determination of classes
 powerconsumption$Global_active_power <- as.numeric(powerconsumption$Global_active_power)
 powerconsumption$Global_reactive_power <- as.numeric(powerconsumption$Global_reactive_power)
@@ -26,9 +25,9 @@ powerconsumption$Sub_metering_3 <- as.numeric(powerconsumption$Sub_metering_3)
 
 #----------Plot3 Code------------------
 DataTime <- strptime(paste(powerconsumption$Date, powerconsumption$Time, sep=" "), "%d/%m/%Y %H:%M:%S") 
+png("Plot 3.png", width = 480, height = 480)
 with(powerconsumption, plot(DataTime, Sub_metering_1, type="l", xlab="", ylab="Energy Submetering"))
 with(powerconsumption, lines(DataTime, Sub_metering_2, col="red"))
 with(powerconsumption, lines(DataTime, Sub_metering_3, col="blue"))
-legend("topright", c("Sub_metering_2","Sub_metering_2", "Sub_metering_3"), col=c("black", "red", "blue"), lty=1)
-dev.copy(png,"Plot 3.png", width = 480, height = 480)
+legend("topright", c("Sub_metering_1","Sub_metering_2", "Sub_metering_3"), col=c("black", "red", "blue"), lty=1)
 dev.off()

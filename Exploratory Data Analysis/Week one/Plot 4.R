@@ -24,9 +24,12 @@ powerconsumption$Sub_metering_1 <- as.numeric(powerconsumption$Sub_metering_1)
 powerconsumption$Sub_metering_2 <- as.numeric(powerconsumption$Sub_metering_2)
 powerconsumption$Sub_metering_3 <- as.numeric(powerconsumption$Sub_metering_3)
 
-#----------Plot3 Code------------------
+#----------Plot4 Code------------------
 DataTime <- strptime(paste(powerconsumption$Date, powerconsumption$Time, sep=" "), "%d/%m/%Y %H:%M:%S") 
+
+png("Plot 4.png", width = 480, height = 480)
 par(mfrow=c(2,2))
+
 with(powerconsumption, plot(DataTime, Global_active_power, type="l", xlab="", ylab="Global Active Power"))
 
 with(powerconsumption, plot(DataTime, Voltage, type="l", xlab="datatime", ylab="Voltage"))
@@ -34,9 +37,8 @@ with(powerconsumption, plot(DataTime, Voltage, type="l", xlab="datatime", ylab="
 with(powerconsumption, plot(DataTime, Sub_metering_1, type="l", xlab="", ylab="Energy Submetering"))
 with(powerconsumption, lines(DataTime, Sub_metering_2, col="red"))
 with(powerconsumption, lines(DataTime, Sub_metering_3, col="blue"))
-legend("topright", c("Sub_metering_2","Sub_metering_2", "Sub_metering_3"), col=c("black", "red", "blue"), lty=1)
+legend("topright", c("Sub_metering_1","Sub_metering_2", "Sub_metering_3"), col=c("black", "red", "blue"), lty=1, bty="n")
 
 with(powerconsumption, plot(DataTime, Global_reactive_power, type="l", xlab="datatime"))
 
-dev.copy(png,"Plot 4.png", width = 480, height = 480)
 dev.off()
