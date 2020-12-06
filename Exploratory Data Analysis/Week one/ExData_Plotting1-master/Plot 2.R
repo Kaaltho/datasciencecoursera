@@ -31,3 +31,4 @@ with(powerconsumption, plot(DataTime, Global_active_power, type="l", xlab="", yl
 dev.copy(png,"Plot 2.png", width = 480, height = 480)
 dev.off()
 
+

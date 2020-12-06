@@ -32,3 +32,5 @@ with(powerconsumption, lines(DataTime, Sub_metering_3, col="blue"))
 legend("topright", c("Sub_metering_1","Sub_metering_2", "Sub_metering_3"), col=c("black", "red", "blue"), lty=1)
 dev.off()
 
+
+

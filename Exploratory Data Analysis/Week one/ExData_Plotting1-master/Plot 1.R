@@ -33,3 +33,4 @@ dev.copy(png,"Plot 1.png", width = 480, height = 480)
 dev.off()
 
 
+
