@@ -1,0 +1,12 @@
+base
+lattice
+ggplot2
+caret
+RColorBrewer
+randomForest
+rpart
+rpart.plot
+corrplot
+tibble
+bitops
+rattle

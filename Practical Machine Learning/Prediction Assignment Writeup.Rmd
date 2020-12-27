@@ -1,0 +1,191 @@
+---
+title: "Prediction Assignment Writeup"
+author: "Kaaltho"
+date: "26/12/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE,}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+The goal of your project is to predict the manner in which they did the exercise. This is the "classe" variable in the training set. You may use any of the other variables to predict with. You should create a report describing how you built your model, how you used cross validation, what you think the expected out of sample error is, and why you made the choices you did. You will also use your prediction model to predict 20 different test cases.
+
+***Background***
+
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
+
+***Reading the data***
+
+```{r reading data, cache=TRUE, result=FALSE}
+#Loading libraries
+library(caret)
+library(ggplot2)
+library(RColorBrewer)
+library(lattice)
+library(randomForest)
+library(rpart)
+library(rpart.plot)
+library(corrplot)
+library(rattle)
+
+set.seed(100)
+
+#Loading data
+#Set the working directory to your own and download the files to it
+setwd("F:/R codes/Projects/datasciencecoursera/Practical Machine Learning")
+
+# File download
+ulrtraining <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+ulrtest <- "http://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+dirfile1 <- "F:/R codes/Projects/datasciencecoursera/Practical Machine Learning/pml-training.csv"
+dirfile2 <- "F:/R codes/Projects/datasciencecoursera/Practical Machine Learning/pml-testing.csv"
+
+download.file(ulrtraining, destfile = dirfile1)
+download.file(ulrtest, destfile =dirfile2)
+
+#Assigning the dataset to a variable
+training <- read.csv(dirfile1, strip.white = TRUE, na.strings = c("NA",""))
+data.test<- read.csv(dirfile2,  strip.white = TRUE, na.strings = c("NA",""))
+
+#To have an idea of the size of the data set
+dim1 <- dim(training)
+dim2 <- dim(data.test)
+```
+The data is presented in the following way
+
+```{r printing data}
+dim1
+dim2
+```
+
+The Training dataset contains `r dim1[1]` observasions and `r dim1[2]` variables.
+The test dataset contains `r dim2[1]` observasions and `r dim2[2]` variables.
+
+## Data analysis
+
+In order to start to analyze the data, there is going to be a partition of 75% and 25%.
+
+```{r data analysis, cache=TRUE}
+training.partition75  <- createDataPartition(training$classe, p=0.75, list=FALSE)
+training.part <- training[training.partition75, ]
+test.part  <- training[-training.partition75, ]
+
+dim(training.part)
+dim(test.part)
+
+# Deleting missing values in the dataset
+zero.var <- nearZeroVar(training.part)
+training.part <- training.part[ , -zero.var]
+test.part  <- test.part[ , -zero.var]
+dim(training.part)
+dim(test.part)
+```
+
+
+```{r data analysis2, cache=TRUE}
+#Deleting NA's
+na <- sapply(training.part, function(x) mean(is.na(x))) > 0.95
+training.part <- training.part[,na == FALSE]
+test.part  <- test.part [,na == FALSE]
+dim(training.part)
+dim(test.part)
+
+#Deleting columns that are no useful for the analysis purposes
+training.part <- training.part[ , -(1:5)]
+test.part <- test.part[ , -(1:5)]
+dim(training.part)
+dim(test.part)
+
+```
+
+***Applying correlation analysis to the data***
+
+In order to do the prediction it is a good exercise to compare the results of tree different predition models, in this case those are: decision tree model, Generalized Boosted Model and the Random Forest Model
+
+***Decision tree model***
+
+```{r data correlation analysis, cache=TRUE}
+corr_matrix <- cor(training.part[ , -54])
+corrplot(corr_matrix, order = "FPC", method = "square", type = "lower",
+         tl.cex = 0.5, tl.col = "black")
+
+```
+Dark blue color means high correlation and dark red color means negative correlation. Since there are not too much highly correlated variables, the next step is to built prediction models of the data.
+
+***Prediction Models***
+
+
+```{r prediction, cache=TRUE}
+set.seed(100)
+
+decision.tree <- rpart(classe ~ ., data = training.part, method="class")
+fancyRpartPlot(decision.tree, sub="Decision Tree for Training Data", palettes=c("Greys", "Oranges"))
+```
+
+```{r prediction 1, cache=TRUE}
+predict.decision.tree <- predict(decision.tree, newdata = test.part, type="class")
+confusion.matrix <- confusionMatrix(table(predict.decision.tree, test.part$classe))
+confusion.matrix
+```
+
+The predictive accuracy of the decision tree model is relatively low at 73.8 %.
+
+Plotting the predictive accuracy of the decision tree model.
+
+```{r prediction plot, cache=TRUE}
+plot(confusion.matrix$table, col = confusion.matrix$byClass, main = paste("Random Forest - Accuracy =",round(confusion.matrix$overall['Accuracy'], 4)))
+```
+
+***Applying a Generalized Boosted Model***
+
+```{r boosted Model, cache=TRUE}
+control.GBM <- trainControl(method = "repeatedcv", number = 5, repeats = 2)
+fit.GBM  <- train(classe ~ ., data = training.part, method = "gbm",
+                  trControl = control.GBM, verbose = FALSE)
+fit.GBM$finalModel
+```
+
+```{r prediction3, cache=TRUE}
+prediction.GBM <- predict(fit.GBM, newdata = test.part)
+confusion.matrix.GBM <- confusionMatrix(table(prediction.GBM, test.part$classe))
+confusion.matrix.GBM
+```
+
+The predictive accuracy for the GBM is 99.31 %.
+
+***Applying Random Forest Model***
+
+```{r forrest model, cache=TRUE}
+set.seed(100)
+control.randomforest <- trainControl(method = "repeatedcv", number = 5, repeats = 2)
+fit.randomforest  <- train(classe ~ ., data = test.part, method = "rf",trControl = control.randomforest, verbose = FALSE)
+
+fit.randomforest$finalModel
+```
+
+```{r forest model2, cache=TRUE}
+prediction.randomforest <- predict(fit.randomforest, newdata = test.part)
+confusion.matrix.randomforest <- confusionMatrix(table(prediction.randomforest, test.part$classe))
+confusion.matrix.randomforest
+```
+
+The accuracy of the model is 1.
+
+***Comparing the results of the models***
+
+  1.Decision Tree Model: 73.80 %
+  2.Generalized Boosted Model: 99.31 %
+  3.Random Forest Model: 100 %
+
+Given the results the model selected to applied a testing dataset is going to be Random Forest due to the accuracy of the model. But the generalized boosted model also provide good results.
+
+```{r prediction test, cache=TRUE}
+predict.data.test <- predict(fit.randomforest, newdata = data.test)
+predict.data.test 
+```
+
