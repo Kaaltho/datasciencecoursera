@@ -115,6 +115,7 @@ corrplot(corr_matrix, order = "FPC", method = "square", type = "lower",
          tl.cex = 0.5, tl.col = "black")
 
 ```
+
 Dark blue color means high correlation and dark red color means negative correlation. Since there are not too much highly correlated variables, the next step is to built prediction models of the data.
 
 ***Prediction Models***
