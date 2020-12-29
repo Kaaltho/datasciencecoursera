@@ -1,0 +1,35 @@
+---
+title: "Data Science CapStone"
+author: "Kaaltho"
+date: "29/12/2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Summary
+
+This project has the purpose of creating an app capable of predict text in real time, as typing comes in, the app predict the most probable words that might be used based on natural language natural language processing, n-grams, Markov and Katz’s back-off model.
+
+## Overview of the Prediction model
+
+The following steps were take in order to make the app
+
+- Downloading and cleaning the data
+- Exploratory Analysis on the data using a sample of the data
+- Building the n-grams from the data corpus
+- Applying to N grams function **back-off** type prediction model
+
+The App predicts the following word for a sequence of words or for a sentence. In the app there is a text box in which you type your sentence and then up to four words are predicted so you can select the one that you prefer
+The application predicts the next word in a phrase/sentence. Up to four possible next word predictions are available, and you have the option to click on any of them.
+
+
+## Words prediction App
+ ![](F:/R codes/Projects/datasciencecoursera/DataScientist CapStone/Text word app.png)
+
+## Documentation
+
+
+
