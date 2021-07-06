@@ -1,0 +1,100 @@
+---
+title: "Regression"
+author: "Kaaltho"
+date: "26/12/2020"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Executive Summary
+
+One of the features that are important in cars is miles per gallon (MPG) consume, every vehicle has his own specifications, one of the most frequent question ask by buyers about MPG consume is: What is better a manual transmission or automatic transmission. This analysis provide an aswer to the following questions:
+
+1. “Is an automatic or manual transmission better for MPG”
+2. "Quantify the MPG difference between automatic and manual transmissions" 
+
+### Exploratory data analysis
+
+The data used to this analysis is from Motor Trend US magazine from 1974, which give some metric for the fuel consumption and performance of 32 different automobiles
+
+
+```{r loading}
+#Oppening libraries
+library(ggplot2)
+library(cowplot)
+#Loading the data:
+data(mtcars)
+#changing the type of variables for convenience in order to do calculations.
+mtcars2 <- mtcars
+cols <- c("cyl", "vs", "gear", "carb")
+mtcars2[cols] <- lapply(mtcars2[cols], factor)
+#new column name transmissions for better plotting understanding
+mtcars2$transmission <- factor(mtcars$am, labels=c("Automatic","Manual"))
+#mean fo automatic and manual transmission
+mean.trans <- aggregate(data=mtcars2, mpg~transmission, mean)
+#Visualization of the data
+plot1 <- ggplot(mtcars2, aes(x=transmission, y=mpg)) +
+  geom_boxplot(colour="darkviolet", fill="skyblue")+ 
+  guides(fill=FALSE) +
+  labs(x="Transmission Type", y="Miles per Gallon", title=("Comparisson bettewn Manual and Automatic Transmission"))+
+  theme(plot.title = element_text(hjust = 0.5))
+plot1
+```
+
+It is possible to make initial assumptions, for instance, in the figure there is a clear difference between Automatic transmission and Manual transmission it seem that Automatic transmission is more efficient when it comes to fuel consumption with a mean of `r round(mean.trans[1,2],2)` Miles per galon , while Manual transmission show a consumption of `r round(mean.trans[2,2],2)` Miles per galon.
+
+### Applying Regresion models
+
+Considering the previous results it is possible to say that there is a difference of 7.25 MPG in relation to the type of transmission, being Automatic transmission the one that consumes less fuel. This assumption could be analyzed through a simple linear regression. 
+
+```{r linear, results="hide"}
+#linear regression
+linear.regression <- lm(mpg ~ factor(am), data=mtcars2)
+summary(linear.regression)
+```
+
+From the calculation p-value is 0.000285, the hypothesis is not rejected, seeing the R-squared value can be said that a third of the variance (36%) could be attributed to just transmission type. To further analysis the next step is to do an Analysis of Variance.
+
+```{r linear2}
+#variance analysis
+mt.variance <- aov(mpg ~ ., data = mtcars2)
+summary(mt.variance)
+```
+
+Some of the variables that could affect the variance in greater way are cyl, disp and wt. This variables are going to be used in the next analysis to see how those affect MPG.
+
+```{r multivariable}
+#Multivariable analysis
+mt.multi <- lm(mpg ~ am + cyl + disp + wt, data = mtcars2)
+summary(mt.multi)
+```
+
+This model show that 83% of the variability can be attribute to the cyl, disp, hp and wt variables, furthermore p-value for cy16 and cy18 are below 0.5, denoting that those variables could have a fair share of influence over the variability of Miles per Gallon so we can say that there is a correlation between those variables and transmission type and Miles per Gallon. 
+
+***MPG difference between automatic and manual transmission***
+
+```{r diference, echo=TRUE, results="hide"}
+modelfit <- lm(mpg~., data=mtcars2)
+stepmodel <- step(modelfit)
+summary(stepmodel)$coeff
+```
+
+Finally the diferrence between automatic and manual transmissions is 1.81 MPG.
+
+### Appendix
+
+Residual Analysis
+
+The “Residuals vs Fitted” plot shows that the residuals are homoscedastic. Also can be seen that they are normally distributed.
+
+```{r residual, echo=TRUE, results="hide"}
+par(mfrow = c(2,2))
+plot(mt.multi)
+```
+
