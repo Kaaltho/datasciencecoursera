@@ -1,0 +1,114 @@
+---
+title: "Statistical Inference Course Project Part2"
+author: "Kaaltho"
+date: "20/12/2020"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Synopsis
+
+Now in the second portion of the project, we're going to analyze the ToothGrowth data in the R datasets package.
+
+Stages of the proyect.
+
+1.Load the ToothGrowth data and perform some basic exploratory data analyses
+Provide a basic summary of the data.
+
+2.Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering)
+
+3.State your conclusions and the assumptions needed for your conclusions.
+
+### **Part 2: Basic Inferential Data Analysis Instructions**
+
+The first step is to simulate the variables that we want to compare.
+
+```{r simulation, cache=TRUE}
+#Oppening libraries
+library(ggplot2)
+library(cowplot)
+
+#Assigning variables names, the specified data is the following:
+data(ToothGrowth)
+head(ToothGrowth)
+
+```
+
+
+***Load the ToothGrowth data and perform some basic exploratory data analyses Provide a basic summary of the data.***
+
+
+The next plot contains the distribution of the variables and it is possible to see if it follows some distribution.
+
+
+```{r simulation2, cache=TRUE}
+ToothGrowth$dose<-as.factor(ToothGrowth$dose)
+
+mean.supp = split(ToothGrowth$len, ToothGrowth$supp)
+sapply(mean.supp, mean)
+
+mean.dose = split(ToothGrowth$len, ToothGrowth$dose)
+sapply(mean.dose, mean)
+
+```
+
+
+```{r means, cache=TRUE}
+#Ploting Type of Supplement versus the Tooth Length
+#Changing as a factor
+ToothGrowth$dose<-as.factor(ToothGrowth$dose)
+
+plot1 <- ggplot(ToothGrowth, aes(x=supp, y=len)) +
+  geom_boxplot(colour="darkviolet", fill="skyblue")+ 
+  guides(fill=FALSE) +
+  labs(x="Method of Supplement", y="Tooth Length", title=("Mean in legnth by Method supplement"))+
+  theme(plot.title = element_text(hjust = 0.5))
+  
+  
+plot2 <- ggplot(ToothGrowth, aes(x=dose, y=len)) +
+  geom_boxplot(colour="darkviolet", fill="skyblue")+ 
+  guides(fill=FALSE) +
+  labs(x="Dose", y="Tooth Length", title=("Mean in length by dose"))+
+  theme(plot.title = element_text(hjust = 0.5))
+
+#This plot is just one image with two plots on it
+plot_grid(plot1, plot2, align = "v", ncol =2, rel_heights = c(1/2, 1/2))
+
+
+```
+
+As can be seen in the graph the distribution of the data of Method of supplement OJ the mean is 20.63 while the mean of the Method of supplement VC correspond to 16.93 length of teeth, apparently supplement OJ has more Tooth Length measure than the Supplement VC. Considering the distribution of Tooth Length relative to dose, it is possible to see that a Dose of 2 have better Tooth length. Could be possible to infer that an OJ method + 2 type dose could drive the results to a better tooth development.
+
+
+***Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering)***
+
+
+Comparing tooth growth by supplement using a t-test.
+
+```{r variance, cache=TRUE}
+t.test(len~supp,data=ToothGrowth)
+```
+
+Due to the fact that the p-value is greater than 0.05 and the confidence interval contains zero, it could be said that the supplement types does not have a impact on Tooth growth.
+
+
+Testing the tooth length by the group with vitamin C dosage
+
+```{r variance2, cache=TRUE}
+t.test(ToothGrowth$len[ToothGrowth$dose==2],ToothGrowth$len[ToothGrowth$dose==1], paired = FALSE, var.equal = TRUE)
+```
+
+
+***State your conclusions and the assumptions needed for your conclusions.***
+
+Seeing that the p-value is approximately zero, can be said that there is evidence to reject the null hypothesis. It is possible to say that higher doses result in greater tooth growth.
+
+Can be concluded that the Method of supplement doesn't have an noticeable impact on tooth growth, furthermore dose level appear to have an influence over tooth growth.
+
+
